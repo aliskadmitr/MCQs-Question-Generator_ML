@@ -59,9 +59,13 @@ def process_pdf(file):
     text = ""
     pdf_reader = PdfReader(file)
     for page_num in range(len(pdf_reader.pages)):
-        page_text = pdf_reader.pages[page_num]
-        text += page_text
+        page = pdf_reader.pages[page_num]
+        page_text = page.extract_text()
+        if page_text:
+            text += page_text + "\n"
     return text
+
+
 
 
 @app.route("/", methods=['POST', 'GET'])
@@ -80,8 +84,9 @@ def index():
 
         num_questions = int(request.form['num_questions'])
         mcqs = generate_mcqs(text, num_questions=num_questions)
-        print(mcqs)
+        # print(mcqs)
         mcqs_with_index = [(i + 1, mcq) for i, mcq in enumerate(mcqs)]
+        # print(mcqs_with_index)
         return render_template('mcqs.html', mcqs=mcqs_with_index)
     return render_template('index.html')
 
