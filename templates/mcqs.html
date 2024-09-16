@@ -1,10 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated MCQs</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
 
+        .container {
+            text-align: left;
+            margin-top: 5%;
+            max-width: 800px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .card-body {
+            text-align: left;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #fdfdfd;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .btn-primary {
+            display: block;
+            margin: 30px auto;
+            padding: 10px 30px;
+            font-size: 16px;
+            border-radius: 50px;
+            background-color: #007bff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .correct-answer {
+            display: none;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .form-check.correct .form-check-label {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .form-check.incorrect .form-check-label {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Start of content -->
+    <div class="container">
+        <h1 class="text-center">Generated MCQs</h1>
+        <div id="mcqs-container">
+            {% for index, mcq in mcqs %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Q{{ index }}: {{ mcq[0] }}?</h5>
+                    <form id="form{{ index }}">
+                        {% set options = ['A', 'B', 'C', 'D'] %}
+                        {% set num_choices = mcq[1]|length %}
+                        {% for choice_index in range(num_choices) %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answer{{ index }}" id="choice{{ index }}{{ choice_index }}" value="{{ options[choice_index] }}" {% if options[choice_index] == mcq[2] %} data-correct="true" {% endif %}>
+                            <label class="form-check-label" for="choice{{ index }}{{ choice_index }}">
+                                {{ options[choice_index] }}: {{ mcq[1][choice_index] }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- Button to show results -->
+        <button id="show-results-btn" class="btn btn-primary">Show Results</button>
+    </div>
+    <!-- End of content -->
+
+    <!-- JavaScript to handle showing results -->
+    <script>
+        document.getElementById('show-results-btn').addEventListener('click', function () {
+            // Loop through each form to check answers
+            var forms = document.querySelectorAll('form');
+            forms.forEach(function(form) {
+                var selectedOption = form.querySelector('input[type="radio"]:checked');
+                if (selectedOption) {
+                    // Check if selected answer is correct
+                    if (selectedOption.hasAttribute('data-correct')) {
+                        selectedOption.parentElement.classList.add('correct');
+                    } else {
+                        selectedOption.parentElement.classList.add('incorrect');
+                        // Also highlight the correct answer
+                        var correctOption = form.querySelector('input[data-correct="true"]');
+                        correctOption.parentElement.classList.add('correct');
+                    }
+                } else {
+                    // If no option selected, just show the correct answer
+                    var correctOption = form.querySelector('input[data-correct="true"]');
+                    correctOption.parentElement.classList.add('correct');
+                }
+            });
+            // Hide the button after showing results
+            this.style.display = 'none';
+        });
+    </script>
 </body>
+
 </html>
